@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 """
-Little helper script that extracts the users from the `compute_cluster.yaml` file for use in our additional
-configuration scripts, such that we don't have to update the lists of users in multiple places.
+Little helper script that extracts the users from a specified YAML configuration file
+for use in our additional configuration scripts, such that we don't have to update
+user lists in multiple places.
 """
 
+import argparse
 from pathlib import Path
 
 try:
@@ -16,7 +18,17 @@ except ImportError:
     warnings.warn(msg, UserWarning)
     sys.exit(1)
 
-config_file = Path(__file__).resolve().parent.parent / 'compute_cluster.yaml'
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="Extract users from a YAML configuration file.")
+parser.add_argument(
+    "-p", "--path",
+    type=Path,
+    default=Path(__file__).resolve().parent.parent.parent / 'data-lms' / 'compute_cluster.yaml',
+    help="Path to the YAML configuration file. Defaults to 'compute_cluster.yaml' in the parent directory."
+)
+args = parser.parse_args()
+
+config_file = args.path
 exclude_users = {"buchel_k", "software", "sala", "ebner", "sharap_b"}
 
 try:
@@ -27,7 +39,7 @@ try:
     admins = config_data.get('aaa::admins', [])
     users = config_data.get('aaa::users', [])
 
-    # Combine both lists into a set to eliminate duplicates, and remove admins
+    # Combine both lists into a set to eliminate duplicates, and remove excluded users
     all_users = sorted(list(set(admins + users) - exclude_users))
 
     # Write to file
