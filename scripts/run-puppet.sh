@@ -42,8 +42,10 @@ for node in "${final_nodes[@]}"; do
     # Use absolute path, as `sudo` uses a restricted $PATH, and the puppet dir is not part of it.
     # Could modify it via `sudo visudo` and add it to the restricted $PATH.
     # Keeping solution with full, absolute path instead for now.
-    pdsh -l "$USER" -w "$node" sudo /opt/puppetlabs/bin/puppet agent -t
+    pdsh -l "$USER" -w "$node" sudo /opt/puppetlabs/bin/puppet agent -t &
 
     # Old solution using ssh instead of `pdsh`
     # ssh "$USER"@"$node" 'sudo bash -i -c "puppet agent -t"'
 done
+# pdsh -l "$USER" -w thor[1-10],lms-mgmt,lms-login sudo /opt/puppetlabs/bin/puppet agent -t
+
