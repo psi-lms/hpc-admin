@@ -1,24 +1,34 @@
-# Repo to store quality-of-life infrastructure for the Thor and Thanos clusters
+# LMS / Thor cluster admin tooling
 
-## `scripts`
-- `extract-users.py`: Obtain usernames from `compute_cluster.yaml` for use in other scripts, so that one doesn't have to
-  update the list of users in multiple places, but **only** in the configuration YAML file
-- `link-homes.sh`: Creates symlinks (if not existing) from `/mnt/home/$USER` to `/home/$USER` so that access to the
-  mounted NFS can be achieved from the _typical_ home directory path users expect
-- `run-puppet.sh`: Connect to compute nodes and login and management VMs and run `puppet agent -t`. Script also allows
-  for some nodes to be excluded from the updates.
-- `restart-BGFS.sh`: Restart BeeGFS service. The script will take care of the specific order that should be respected.
-  - Perquisites:
-    - Install `pdsh` on your local machine.
-    - Able to ssh to all nodes password-less.
-    - To have sudo access
-  - Usage:
-    - `./restart-BGFS.sh stop` to stop BeeGFS service.
-    - `./restart-BGFS.sh start` to start BeeGFS service.
+Quality-of-life infrastructure for the Thor cluster (and historically also Thanos): operational scripts, fan-out helpers, and architecture / runbook docs that capture the parts of the cluster that aren't otherwise version-controlled.
 
-## Notes
+Most scripts here assume you run them from your **local workstation** (`mpc3152` etc.), where `pdsh` is configured with the `ssh` rcmd module and root has SSH keys to every thor node via FQDN. See `docs/cluster-ops-runbook.md` for the full auth and connectivity model.
 
-- Shell scripts require `pdsh` for remote execution of commands on (multiple) hosts
-- If `pdsh` gives exception: `rcmd: socket: Permission denied`, create `/etc/pdsh/rcmd_default` on your local machine
-  and add "ssh" as text to it, e.g., `sudo echo "ssh" > /etc/pdsh/rcmd_default`
-- `extract-users.py` requires `pyyaml` installed
+## Docs
+
+- `docs/cluster-ops-runbook.md` — operational primitives: how to drain/resume nodes, run puppet cluster-wide, remount `/scratch`, restart BeeGFS metadata servers, deploy files via Hiera. Start here for any maintenance window.
+- `docs/containers-architecture.md` — final design of the rootless-Podman setup on the cluster: vfs storage on `/scratch` (BeeGFS), per-user `~/.config/containers/storage.conf` auto-deployed via puppet, why overlay-on-BeeGFS was rejected, troubleshooting, onboarding.
+- `docs/scripts.md` — inventory of every script in `scripts/`, with purpose, prerequisites, and example invocation.
+- `docs/subuid-rollout-plan.md` — deferred follow-up: pre-allocate per-user `/etc/subuid` / `/etc/subgid` ranges via puppet to eliminate the first-run-on-unvisited-worker `lchown` quirk.
+
+## Scripts at a glance
+
+See `docs/scripts.md` for full descriptions.
+
+| Script | Purpose |
+|---|---|
+| `extract-users.py` | Refresh `USERS` from `data-lms/compute_cluster.yaml` |
+| `run-puppet.sh` | Fan out `puppet agent -t` to every cluster node |
+| `restart-BGFS.sh` | Stop / start the entire BeeGFS stack in correct order |
+| `enable-beegfs-xattrs-meta.sh` | Idempotent `storeClientXAttrs=true` flip on a meta server |
+| `cluster-health-check.sh` | Single-shot cluster-wide health audit (draft) |
+| `link-homes.sh` | Per-node `/home/<user>` → `/mnt/home/<user>` symlinks |
+| `deploy-podman-storage-conf.sh` | Push canonical podman storage.conf into existing user homes |
+| `fix-user-group.sh` | Map slurm account to unix group; chown home and scratch (draft) |
+
+## Prerequisites
+
+- `pdsh` with the `ssh` rcmd module (`apt install pdsh-rcmd-ssh` or equivalent). If you see `rcmd: socket: Permission denied`, create `/etc/pdsh/rcmd_default` containing the literal string `ssh` (e.g. `echo ssh | sudo tee /etc/pdsh/rcmd_default`).
+- Root SSH keys on your workstation pre-authorized for `root@thor[1-10].psi.ch` (FQDN).
+- `pyyaml` for `extract-users.py`.
+- `sudo` for the `pdsh` calls (root's keys are what reach the thors).
