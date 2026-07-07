@@ -2,7 +2,3 @@
 # private data-lms repo. Never commit: this is a public repo and the
 # file is a directory of all current LMS lab usernames.
 scripts/USERS
-
-# Local working artefacts.
-COMMIT_EDITMSG
-slack-draft-*.md
