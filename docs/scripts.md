@@ -76,6 +76,28 @@ The companion client-side flag (`sysXAttrsEnabled`) is puppet-managed
 in `data-lms/compute_cluster.yaml` and rolls out to every node via
 `run-puppet.sh`.
 
+### `firecrest-bootstrap.sh`
+
+One-time bootstrap for the FirecREST pilot on `lms-login`. Creates
+everything secret-bearing that Puppet deliberately does not manage: the
+`/etc/firecrest/secrets` tree, an ed25519 keypair per pilot user, the
+service account secret, the Keycloak realm JSON and `keycloak.env`. Runs
+**on the node as root**, unlike most scripts here, and must run *before*
+the first puppet run so `files::files` finds its parent directories.
+
+Idempotent: existing keys and secrets are kept rather than rotated. It
+prints the generated credentials and the public keys, and appends nothing
+to any user's `authorized_keys`, which is left as a deliberate manual step.
+
+Edit `PILOT_USERS` at the top to add people. See
+[firecrest-deployment.md](firecrest-deployment.md) for the surrounding
+design and the activation runbook.
+
+```bash
+scp scripts/firecrest-bootstrap.sh lms-login.psi.ch:/tmp/
+ssh lms-login.psi.ch 'sudo bash /tmp/firecrest-bootstrap.sh'
+```
+
 ### `cluster-health-check.sh`
 
 Single-shot audit collecting slurm node states, BeeGFS health, NFS
