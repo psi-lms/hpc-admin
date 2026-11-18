@@ -3,7 +3,7 @@
 # Run before the upgrade, after installing 16, and after pg_upgradecluster.
 # Read-only.
 #
-#   sudo -v && bash ~/scripts/thanos/pg-datadir-check.sh
+#   sudo -v && bash ~/scripts/hpc-admin/thanos/postgres/pg-datadir-check.sh
 set -uo pipefail
 export LC_ALL=C
 cd /   # postgres cannot chdir into /home/aiida; avoids a warning per command

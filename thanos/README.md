@@ -11,8 +11,18 @@ since spent were left out; everything here is either reusable or is the record
 of a decision.
 
 Scripts here run **on thanos**, unlike the rest of this repository, which runs
-from a workstation and fans out to the cluster with `pdsh`. Deploy them to
-`~/scripts/thanos/` on the box.
+from a workstation and fans out to the cluster with `pdsh`. Deploy by cloning
+this repository on the box, so `git log` answers which version is running:
+
+```bash
+git clone https://github.com/psi-lms/hpc-admin.git ~/scripts/hpc-admin
+cd ~/scripts/hpc-admin && git pull
+```
+
+HTTPS rather than SSH, because the repository is public and thanos has a single
+shared account whose key is not the right identity to be pulling with. Treat
+the checkout as read-only: editing a script in place there makes the next
+`git pull` conflict.
 
 ## Layout
 

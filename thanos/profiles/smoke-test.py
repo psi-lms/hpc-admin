@@ -1,7 +1,7 @@
 """Post-upgrade smoke test: exercise the write path and the read path.
 
     cda <project>
-    verdi run ~/scripts/thanos/smoke-test.py
+    verdi run ~/scripts/hpc-admin/thanos/profiles/smoke-test.py
 
 Writes a few small nodes into the profile, then reads files back out of nodes
 that already existed. Needs no Computer or Code, so it works on any profile.

@@ -17,7 +17,7 @@
 # config, code and notebooks, which change slowly; daily generations would
 # cost inodes and prune time without buying recovery depth.
 #
-#   30 5 * * 0 /bin/bash /home/aiida/scripts/thanos/home-backup.sh --go >> /home/aiida/home-backup-cron.log 2>&1
+#   30 5 * * 0 /bin/bash /home/aiida/scripts/hpc-admin/thanos/backups/home-backup.sh --go >> /home/aiida/home-backup-cron.log 2>&1
 #
 # Do NOT wrap that in an outer `flock` on the same lock path: the wrapper would
 # take the lock and this script would then find it held and exit immediately.

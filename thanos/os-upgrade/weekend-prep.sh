@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Cheap pre-upgrade collection. Minutes, not hours. Nothing destructive.
 # Needs a primed sudo timestamp on a TTY:
-#   ssh -t thanos ; sudo -v && bash ~/scripts/thanos/weekend-prep.sh
+#   ssh -t thanos ; sudo -v && bash ~/scripts/hpc-admin/thanos/os-upgrade/weekend-prep.sh
 set -uo pipefail
 export LC_ALL=C
 cd /   # postgres cannot chdir into /home/aiida; avoids a warning per command

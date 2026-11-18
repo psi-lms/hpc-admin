@@ -3,8 +3,8 @@
 # This is the step that has never been tested, and it is the entire premise
 # of the backup. Read-only against the backup; creates and drops one scratch DB.
 #
-#   sudo -v && bash ~/scripts/thanos/restore-test.sh
-#   PROJECT=sssp-tests PROFILE=correct_cutoffs bash ~/scripts/thanos/restore-test.sh
+#   sudo -v && bash ~/scripts/hpc-admin/thanos/backups/restore-test.sh
+#   PROJECT=sssp-tests PROFILE=correct_cutoffs bash ~/scripts/hpc-admin/thanos/backups/restore-test.sh
 set -uo pipefail
 export LC_ALL=C
 # sudo keeps the cwd, and postgres cannot chdir into /home/aiida (drwxr-x---).

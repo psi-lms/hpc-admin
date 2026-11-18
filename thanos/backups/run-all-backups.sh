@@ -6,7 +6,7 @@
 # pg_dumps plus NFS writes is exactly what the staggered crontab exists to avoid.
 #
 #   tmux new -s backup
-#   bash ~/scripts/thanos/run-all-backups.sh
+#   bash ~/scripts/hpc-admin/thanos/backups/run-all-backups.sh
 #
 # Takes hours. The 13 already-covered profiles are incremental against last
 # night (--link-dest, fast); the other 23 profiles are first-time full copies of

@@ -4,7 +4,7 @@
 # but it is the only thing that captures databases no profile references, and
 # it is a single self-contained artefact to restore from.
 #
-#   sudo -v && bash ~/scripts/thanos/pg-dumpall-full.sh
+#   sudo -v && bash ~/scripts/hpc-admin/thanos/postgres/pg-dumpall-full.sh
 #
 # Run with the AiiDA daemons stopped and the backup crontab suspended.
 # pg_dumpall runs pg_dump per database sequentially, each in its own snapshot,

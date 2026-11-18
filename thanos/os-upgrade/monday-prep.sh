@@ -2,7 +2,7 @@
 # Everything to do before starting the OS upgrade, in order, as one command.
 #
 #   ssh -t thanos
-#   sudo -v && bash ~/scripts/thanos/monday-prep.sh 2>&1 | tee ~/monday-prep-$(date +%F-%H%M).txt
+#   sudo -v && bash ~/scripts/hpc-admin/thanos/os-upgrade/monday-prep.sh 2>&1 | tee ~/monday-prep-$(date +%F-%H%M).txt
 #
 # Sudo must be primed on this TTY first: Ubuntu caches the timestamp per-TTY,
 # so a bare `sudo` inside a script that was started without one will fail.

@@ -104,7 +104,7 @@ Script: [`home-backup.sh`](home-backup.sh).
 Cron line, not yet installed:
 
 ```cron
-30 5 * * 0 /bin/bash /home/aiida/scripts/thanos/home-backup.sh --go >> /home/aiida/home-backup-cron.log 2>&1
+30 5 * * 0 /bin/bash /home/aiida/scripts/hpc-admin/thanos/backups/home-backup.sh --go >> /home/aiida/home-backup-cron.log 2>&1
 ```
 
 ### Properties worth knowing before changing anything
@@ -127,7 +127,7 @@ Cron line, not yet installed:
 * **Not yet run.** The dry run is the next step, and it has not happened:
 
   ```bash
-  bash ~/scripts/thanos/home-backup.sh --top 25
+  bash ~/scripts/hpc-admin/thanos/backups/home-backup.sh --top 25
   ```
 
   It prints a summary rather than a file list, and makes a single traversal. Two
