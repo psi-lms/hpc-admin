@@ -286,7 +286,16 @@ mkdir -p "$STAGE"
 
 # Staged into in-progress/ and promoted only on success, so a partial copy can
 # never be mistaken for a complete one. Re-running continues where it stopped.
-"${RSYNC[@]}" --info=progress2,stats2 --human-readable "$SRC/" "$STAGE/" 2>&1 | tee -a "$LOG"
+#
+# `--info=progress2` repaints one line with carriage returns and never emits a
+# newline, so teeing it straight into the log produces a multi-megabyte file of
+# six lines. The process substitution splits the stream: the terminal gets
+# everything, the log gets the same minus the progress frames.
+#
+# bash does not wait for a process substitution, so rsync's closing stats block
+# can land in the log just after the lines written below it. Cosmetic.
+"${RSYNC[@]}" --info=progress2,stats2 --human-readable "$SRC/" "$STAGE/" 2>&1 \
+  | tee >(tr '\r' '\n' | grep -avE '^[[:space:]]*[0-9][0-9,.]*[KMGT]?[[:space:]]+[0-9]+%' >> "$LOG")
 rc=${PIPESTATUS[0]}
 
 {
