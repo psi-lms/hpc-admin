@@ -22,8 +22,8 @@ collaborator and group owner are referred to by role.
 A second, near-empty `workchain/PBEsol/bands/lumi` (1 node) exists in
 `fermisurf/main`. Address the group by uuid, not label.
 
-The export group was built by `/tmp/make-flaviano-group.py` (copied to
-`/home/aiida/make-flaviano-group.py`), which runs the collaborator's own query including
+The export group was built by [`make-export-group.py`](make-export-group.py),
+which runs the collaborator's own query including
 the `scf` -> `iteration_01` joins, so every workchain in it yields a row for him.
 `verdi group delete` removes it; it is the only write this whole exercise makes
 to the production profile.
@@ -202,7 +202,7 @@ know the later versions.
 
 ### Verifying the result
 
-`verify-flaviano-query.py` loads an archive as a `sqlite_zip` profile, discovers
+`verify-query.py` loads an archive as a `sqlite_zip` profile, discovers
 the group label from the archive, runs his query verbatim and probes one row to
 show which parts survive without `repo/` members. `SqliteZipBackend.create_profile`
 builds the `Profile` in memory and `load_profile(..., allow_switch=True)` never
@@ -212,7 +212,7 @@ the workstation than on thanos, since that is what the collaborator will actuall
 ```bash
 cd /home/geiger_j/aiida_projects/aiida-dev/git-repos/aiida-core
 source .venv/bin/activate.fish
-python verify-flaviano-query.py ~/exports/lumi-10k-db-main0003.aiida
+python verify-query.py ~/exports/lumi-10k-db-main0003.aiida
 ```
 
 ## Resolved: he needs the band arrays

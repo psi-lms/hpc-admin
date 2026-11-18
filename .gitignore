@@ -2,3 +2,7 @@
 # private data-lms repo. Never commit: this is a public repo and the
 # file is a directory of all current LMS lab usernames.
 scripts/USERS
+
+# Python bytecode from running the helper scripts in place.
+__pycache__/
+*.pyc
