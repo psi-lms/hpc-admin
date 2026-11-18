@@ -35,6 +35,7 @@ HEALTH_CHECK_OWNER="geiger_j"   # which cluster account FirecREST's own probing 
 REALM="lms"
 SECRETS_DIR="/etc/firecrest/secrets"
 APPUSER_UID=5678                # the UID the firecrest-v2 image runs as
+KEYCLOAK_UID=1000               # the UID the keycloak image runs as
 KC_ADMIN="admin"
 
 if [[ $EUID -ne 0 ]]; then
@@ -59,6 +60,10 @@ mkdir -p "$SECRETS_DIR" /var/lib/firecrest/keycloak
 chmod 0755 /etc/firecrest
 chmod 0700 "$SECRETS_DIR"
 chown -R "$APPUSER_UID:$APPUSER_UID" "$SECRETS_DIR"
+# The keycloak quadlet mounts this at /opt/keycloak/data, where Keycloak writes
+# its H2 database. The official image runs as UID 1000, so a root-owned
+# directory here makes the container fail on startup.
+chown -R "$KEYCLOAK_UID:$KEYCLOAK_UID" /var/lib/firecrest/keycloak
 
 echo "== ssh keypairs"
 declare -A PUBKEYS
