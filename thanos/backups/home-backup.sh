@@ -89,10 +89,11 @@ project/*/workdir/
 # 3.73M files / 75 GB.
 project/mc3d-source/scripts/cif-export/
 
-# --- Python / JS environments: rebuildable from the lockfiles and freezes ---
-# .aiida_venvs is 12 GB / 551k files and every env dies at the 3.12 jump. The
-# pip-freeze record lives in ~/monday-prep-*/, which IS backed up, so the
-# faithful record of what was installed survives without the trees.
+# --- Python / JS environments: derived artefacts, not data ---
+# An environment is recreatable from the lockfile and pyproject that define it,
+# which are themselves in the checkouts under git-repos/ and so are backed up.
+# Restoring 551k installed files to avoid a `uv sync` is the wrong trade,
+# especially over NFS where the file count is what costs.
 .aiida_venvs/
 **/.venv/
 **/venv/
@@ -147,7 +148,6 @@ core.[0-9]*
 # git-repos/                    plugin and project checkouts, incl. uncommitted
 # jupyter/                      notebooks and their data (53 GB in jupyter/mm)
 # icsd_raw_export/              possibly licensed, NOT regenerable
-# monday-prep-*/                the pip-freeze record of all 22 environments
 EOF
 )
 
