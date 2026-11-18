@@ -13,7 +13,7 @@ disk-objectstore container plus a `db.psql` dump. 19 cron jobs, 36 profiles,
 They do not cover anything else in `/home/aiida`: dotfiles, `.ssh`,
 `.erlang.cookie`, the global and per-project `config.json`, the `setup/`
 provisioning YAML, `scripts/`, `git-repos/` checkouts with uncommitted work,
-notebooks. Roughly 387 GB.
+notebooks. 174 GB in 745k files, measured on the first full run.
 
 That content had one copy, an rsync taken before the upgrade at
 `/nfs/nfsbackup/aiida_thanos/_home-aiida/20260821-152301/`: 1.84 TB,
@@ -22,9 +22,23 @@ exports that users were being asked to delete anyway, and because a 12.9M-file
 tree cannot be re-taken in a night. Deletion completed 2026-11-18, all 1.84 TB
 reclaimed.
 
-So between then and the first run of the new script, the non-profile contents
-of `/home/aiida` have **no backup at all**. That is the whole point of this
-work.
+Between then and the first run of the new script, the non-profile contents of
+`/home/aiida` had **no backup at all**. That is what this work closed.
+
+## First run
+
+2026-11-18, 15:54 to 16:54 UTC, one hour wall clock, rsync exit 0.
+
+```
+Number of files: 857,611 (reg: 744,797, dir: 111,254, link: 1,560)
+Total file size: 173.97G bytes
+```
+
+Promoted to `/nfs/nfsbackup/aiida_thanos/_home-aiida/20261118-165444`, with
+`latest` pointing at it. The volume went from 82% to 83% used.
+
+Compare against the pre-upgrade full copy: 1.84 TB and 12.9M files, which could
+not finish in a night. The exclude list is what turned days into an hour.
 
 ## Route taken, and what was rejected
 
@@ -90,9 +104,13 @@ Script: [`home-backup.sh`](home-backup.sh).
   per-profile jobs finish at 04:30. Overlapping them is worth avoiding because
   `verdi storage backup` runs a maintenance step that already fails on an
   active profile.
-* **Retention**: `KEEP=4`, so ~1 month of depth. Daily was considered and
-  rejected: this content changes slowly, and generations cost inodes and prune
-  time without buying recovery depth.
+* **Retention**: `KEEP=8`, so ~2 months of depth. Agreed in the group meeting
+  of 2026-11-18, raised from an initial 4. Daily was considered and rejected:
+  this content changes slowly, and generations cost inodes and prune time
+  without buying recovery depth.
+* **Opt-out directory**: `/home/aiida/no-backup/` is excluded. Created
+  2026-11-18 so users have somewhere to put large scratch data without it
+  entering a generation, and without this list needing an edit per case.
 * **Free-space floor**: `MIN_FREE_GB=1000`. Refuses to start below 1 TB free,
   against ~5.4 TB available. Generous on purpose, because the per-profile
   backups share this volume and must not be starved.
@@ -101,7 +119,7 @@ Script: [`home-backup.sh`](home-backup.sh).
   the cron invocation in an outer `flock` on the same path: the wrapper would
   take the lock and the script would then find it held and exit immediately.
 
-Cron line, not yet installed:
+Cron line:
 
 ```cron
 30 5 * * 0 /bin/bash /home/aiida/scripts/hpc-admin/thanos/backups/home-backup.sh --go >> /home/aiida/home-backup-cron.log 2>&1
@@ -116,6 +134,12 @@ Cron line, not yet installed:
 * Because generations share blocks, deleting one frees only the blocks no
   surviving generation links to. A `du` of one generation does not tell you
   what deleting it would reclaim.
+* **Pruning the oldest generation does not break the newer ones.** Hard links
+  are peers: no generation is the original, and the inode's data survives until
+  its link count reaches zero. `rm -rf` on generation 1 removes directory
+  entries and decrements link counts; a file still referenced by generations
+  2-8 keeps its blocks. Verify with `stat -c '%h %i'` on the same path across
+  generations.
 * The script stages into `in-progress/` and promotes to a timestamped directory
   only after rsync exits 0 or 24, so a partial copy can never be mistaken for a
   complete one. Re-running continues where it stopped.
@@ -124,17 +148,11 @@ Cron line, not yet installed:
 
 ## Open items
 
-* **Not yet run.** The dry run is the next step, and it has not happened:
-
-  ```bash
-  bash ~/scripts/hpc-admin/thanos/backups/home-backup.sh --top 25
-  ```
-
-  It prints a summary rather than a file list, and makes a single traversal. Two
-  numbers come out of it: the **file count**, which decides whether `KEEP=4` is
-  comfortable, and the **largest candidates**, which is the check on the exclude
-  list. Anything large in that list that should have been filtered means a
-  pattern is missing. Do not quote a size for this backup before that run.
+* **`--link-dest` is proven on this volume, not assumed.** `stat` on the
+  per-profile generations shows one inode with `links=4` across four
+  `mc3d-source/prod` backups, including a 4.29 GB pack file. NFSv3 has a `LINK`
+  procedure that ONTAP executes server-side. The constraint `link(2)` imposes
+  is one filesystem, which all generations under `/nfs/nfsbackup` satisfy.
 * **`/nfs/nfsbackup` has no snapshots and no SnapMirror**, while the live
   `/nfs/aiida_data` has 132 snapshots and daily replication. The volume holding
   every AiiDA backup is the unprotected one, on the same filer as the data it

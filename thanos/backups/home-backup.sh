@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Rotating backup of /home/aiida to NFS, for everything the per-profile verdi
 # backups do not cover: dotfiles, .ssh, .erlang.cookie, every config.json and
-# setup/ YAML, scripts/, git-repos/ checkouts, notebooks. Roughly 387 GB.
+# setup/ YAML, scripts/, git-repos/ checkouts, notebooks. 174 GB in 745k
+# files, measured on the first full run, 2026-11-18.
 #
 #   bash home-backup.sh              # dry run, summary only
 #   bash home-backup.sh --top 25     # dry run, plus the 25 largest candidates
@@ -10,7 +11,8 @@
 # Self-contained: the exclude list is embedded below, so this one file is the
 # whole deployment. Run it on thanos as the `aiida` user.
 #
-# Schedule: weekly, Sunday 05:30, keeping 4 generations (~1 month of depth).
+# Schedule: weekly, Sunday 05:30, keeping 8 generations (~2 months of depth,
+# agreed in the group meeting of 2026-11-18).
 # The 19 per-profile jobs occupy 00:00 to 04:30, and `verdi storage backup`
 # runs a maintenance step that already fails on an active profile, so
 # overlapping them is worth avoiding. /home/aiida outside the profiles is
@@ -28,7 +30,7 @@ export LC_ALL=C
 
 SRC="${SRC:-/home/aiida}"
 DEST_ROOT="${DEST_ROOT:-/nfs/nfsbackup/aiida_thanos/_home-aiida}"
-KEEP="${KEEP:-4}"
+KEEP="${KEEP:-8}"
 # 1 TB, against ~5.4 TB free. Generous on purpose: the per-profile verdi
 # backups share this volume and must not be starved by this one.
 MIN_FREE_GB="${MIN_FREE_GB:-1000}"
@@ -61,6 +63,12 @@ done
 # round trip, and the pre-upgrade full copy was 12.9M files and could not
 # finish in a night. `local_workdir` and `cif-export` are ~95% of that count.
 EXCLUDES=$(cat <<'EOF'
+# --- the opt-out directory ---
+# Anything under ~/no-backup is never copied. Created 2026-11-18 so that users
+# have somewhere to put large scratch data without it entering a backup
+# generation, and without needing this list edited for each case.
+no-backup/
+
 # --- covered by the per-profile verdi backups (container + db.psql) ---
 # Three repository layouts are in use; see ../profiles/repository-map.md.
 project/*/.aiida/repository/
