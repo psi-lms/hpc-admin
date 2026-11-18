@@ -70,6 +70,10 @@ project/*/repositories/
 *.sqlite
 *.sqlite3
 *.dump
+# Compressed dumps are the same thing; a 2.4 GB `.psql.gz` was found this way.
+*.psql.gz
+*.sql.gz
+*.dump.gz
 
 # --- raw calculation files: inputs/outputs of jobs already in the profiles ---
 # 13.2M files / 542 GB in mc3d-source alone. `verdi calcjob cleanworkdir`
@@ -84,6 +88,11 @@ project/*/workdir/
 # --- archive exports: regenerable with `verdi archive create` ---
 # ~1.5 TB in 649 files, ~360 GB of it same-named duplicates in the top 10.
 *.aiida
+
+# Python `mkdtemp` directories, which is `tmp` plus 8 random characters. Two
+# abandoned archive exports were sitting in them, 6.6 GB and 457 MB. Anything
+# in a temp directory is by definition not worth a backup generation.
+**/tmp????????/
 
 # --- generated bulk data, regenerable from the profiles ---
 # 3.73M files / 75 GB.
