@@ -31,5 +31,6 @@ aiida_venv_dir=/home/aiida/.aiida_venvs
   30   3   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n ali-playground   -p "dev"                                                   > $REPO/aiida-backup-ali-playground.log   2>&1
   45   3   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n thor-dev         -p "thor-dev"                                              > $REPO/aiida-backup-thor-dev.log         2>&1
    0   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n pseudo-opt       -p "dev prod"                                              > $REPO/aiida-backup-pseudo-opt.log       2>&1
-  15   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n alps_run         -p "arch_final arch_t1 presto-8"                           > $REPO/aiida-backup-alps_run.log         2>&1
-  30   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-pbesol-v1   -p "prod"                                                  > $REPO/aiida-backup-mc3d-pbesol-v1.log   2>&1
+  15   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n alps_run        -p "arch_final arch_t1 presto-8"                            > $REPO/aiida-backup-alps_run.log        2>&1
+  30   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-pbesol-v1  -p "prod"                                                   > $REPO/aiida-backup-mc3d-pbesol-v1.log  2>&1
+
