@@ -138,7 +138,7 @@ Cron line, not yet installed:
 * **`/nfs/nfsbackup` has no snapshots and no SnapMirror**, while the live
   `/nfs/aiida_data` has 132 snapshots and daily replication. The volume holding
   every AiiDA backup is the unprotected one, on the same filer as the data it
-  protects. Mail to Michel Rebman sent 2026-09-15, **no reply**. Until that
+  protects. Raised with PSI central computing on 2026-09-15, **no reply**. Until that
   changes, this rotation is the only recovery depth that exists for `/home`.
 * **`aiida-backup-checker.py` reports a crash as absence.** It only matches
   `Success`/`Failure`, so a traceback removes a project from the table rather
@@ -162,7 +162,7 @@ Cron line, not yet installed:
 
 * `/nfs/nfsbackup` is exported with `root_squash`. Root on thanos maps to an
   unprivileged uid on the filer, so `sudo` does not defeat a permission denial
-  there. If the owning uid is not yours, it needs that user or Michel.
+  there. If the owning uid is not yours, it needs that user or PSI central computing.
 * Unlink permission comes from write+execute on the **containing directory**,
   not from ownership of the file. This is what blocked the last 79 MB of the
   old copy: 314 `potpaw/<El>/` directories at mode `0550`, owner `aiida`.

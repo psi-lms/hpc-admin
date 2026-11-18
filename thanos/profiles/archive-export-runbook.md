@@ -1,10 +1,12 @@
-# Exporting the PBEsol bands group for Flaviano
+# Exporting a large group as an archive
 
-Flaviano Marchiori dos Santos needs to run QueryBuilder queries against Marnik
-Bercx's `workchain/PBEsol/bands/lumi` group for a metal/insulator classification
-project with Nicola. He lost access to `prnmarvelsrv3.epfl.ch`. Giovanni does not
-want to hand out thanos access (single shared account, RW for everyone), so we
-export instead. He visits PSI on Tuesday 2026-09-22.
+Worked example from September 2026: handing an external collaborator a subset of
+the `workchain/PBEsol/bands/lumi` group as an AiiDA archive, so they can run
+their own QueryBuilder queries without an account on thanos. 10,000 workchains
+out of 33,191.
+
+Kept because the sizes, timings and pitfalls are the reusable part. The
+collaborator and group owner are referred to by role.
 
 ## What the data is
 
@@ -13,7 +15,7 @@ export instead. He visits PSI on Tuesday 2026-09-22.
 | project | `mc3d-pbesol-v1`, `/home/aiida/project/mc3d-pbesol-v1` |
 | profile | `prod`, db `mc3d-pbesol-v1-prod`, repo `file:///nfs/aiida_data/repositories/mc3d-pbesol-v1/prod` |
 | venv | `/home/aiida/.aiida_venvs/mc3d-pbesol-v1` (sourcing it also sets `AIIDA_PATH`) |
-| source group | `workchain/PBEsol/bands/lumi`, pk 14, uuid `219b7062-6186-4f15-998d-01c02f9e4328`, owner marnik.bercx@epfl.ch |
+| source group | `workchain/PBEsol/bands/lumi`, pk 14, uuid `219b7062-6186-4f15-998d-01c02f9e4328`, owned by the group owner |
 | contents | 33191 `PwBandsWorkChain`, 31252 with `exit_status = 0`, one per input structure |
 | export group | `workchain/PBEsol/bands/lumi/export/flaviano-10k`, uuid `48579708-809f-4be6-93db-0f9660e86304`, 10000 workchains |
 
@@ -21,7 +23,7 @@ A second, near-empty `workchain/PBEsol/bands/lumi` (1 node) exists in
 `fermisurf/main`. Address the group by uuid, not label.
 
 The export group was built by `/tmp/make-flaviano-group.py` (copied to
-`/home/aiida/make-flaviano-group.py`), which runs Flaviano's own query including
+`/home/aiida/make-flaviano-group.py`), which runs the collaborator's own query including
 the `scf` -> `iteration_01` joins, so every workchain in it yields a row for him.
 `verdi group delete` removes it; it is the only write this whole exercise makes
 to the production profile.
@@ -112,7 +114,7 @@ themselves once downloaded and the directory context is gone.
 │   └── mc3d-pbesol-v1-bands-lumi-db.aiida          1.98 GB
 ├── workchain-PBEsol-bands-lumi-export-flaviano-10k/
 │   ├── mc3d-pbesol-v1-bands-lumi-10k-full.aiida    193 GB
-│   └── mc3d-pbesol-v1-bands-lumi-10k-db.aiida      486 MB   <- the one for Flaviano
+│   └── mc3d-pbesol-v1-bands-lumi-10k-db.aiida      486 MB   <- the one for the collaborator
 └── tmp/                                                     TMPDIR, keep
 ```
 
@@ -205,7 +207,7 @@ the group label from the archive, runs his query verbatim and probes one row to
 show which parts survive without `repo/` members. `SqliteZipBackend.create_profile`
 builds the `Profile` in memory and `load_profile(..., allow_switch=True)` never
 touches `config.json`, so this registers nothing, but it is still better run on
-the workstation than on thanos, since that is what Flaviano will actually do.
+the workstation than on thanos, since that is what the collaborator will actually do.
 
 ```bash
 cd /home/geiger_j/aiida_projects/aiida-dev/git-repos/aiida-core

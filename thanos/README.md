@@ -18,7 +18,7 @@ from a workstation and fans out to the cluster with `pdsh`. Deploy them to
 
 | Directory | Holds |
 |---|---|
-| [`os-upgrade/`](os-upgrade/) | The upgrade itself: preparation, post-reboot checks, venv rebuilds, the running log of what was actually done, and what was deliberately left undone |
+| [`os-upgrade/`](os-upgrade/) | An account of the 2026 run, preparation, post-reboot checks, venv rebuilds, and what was deliberately left undone |
 | [`backups/`](backups/) | The `/home/aiida` backup, the per-profile backup crontab and its preflight, and the restore test |
 | [`postgres/`](postgres/) | Where the cluster keeps its data, and the whole-cluster dump |
 | [`profiles/`](profiles/) | Which profile keeps its repository where, the profile inventory sweep, a functional smoke test, and a worked archive export |
@@ -27,7 +27,7 @@ from a workstation and fans out to the cluster with `pdsh`. Deploy them to
 
 | For | Read |
 |---|---|
-| Upgrading the OS again | [`os-upgrade/runlog-2026-08.md`](os-upgrade/runlog-2026-08.md), then the sequence below |
+| Upgrading the OS again | [`os-upgrade/README.md`](os-upgrade/README.md), then the sequence below |
 | What was deliberately left undone | [`os-upgrade/followups.md`](os-upgrade/followups.md) |
 | The `/home/aiida` backup | [`backups/home-backup.md`](backups/home-backup.md) |
 | Which profile keeps its repository where | [`profiles/repository-map.md`](profiles/repository-map.md) |
@@ -62,10 +62,10 @@ Read these before planning anything. Each one cost time to learn.
 * **Unlink permission comes from write+execute on the containing directory**,
   not from ownership of the file. A tree of mode `0550` directories cannot be
   removed by its own owner until the directories get `u+w`.
-* **There was no console.** `192.168.8.x` is unreachable from every host we can
-  use and the gateways the lab wiki documents no longer resolve. The 2026
-  upgrade was completed without one. Request console access *before* the next
-  one.
+* **There was no console.** The management subnet is unreachable from every
+  host we can use, and the gateways the lab wiki documents no longer resolve.
+  The 2026 upgrade was completed without a console. Request access *before* the
+  next one.
 
 ## Storage layout
 
@@ -76,7 +76,7 @@ Read these before planning anything. Each one cost time to learn.
 | `/nfs/aiida_data` | Repositories for four profiles. 132 snapshots, daily SnapMirror. **Only copy of this data** | 17 TB |
 | `/` | `/dev/sdb2`, OS only | 234 GB |
 
-Both NFS mounts are volumes on one NetApp SVM, `svmnfs.psi.ch`. The volume
+Both NFS mounts are volumes on a single NetApp SVM. The volume
 holding every AiiDA backup is the one with no snapshot protection, and it
 shares a filer with the live data it protects. Raised with PSI central
 computing on 2026-09-15; **no reply as of 2026-11-18**.
