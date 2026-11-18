@@ -16,6 +16,16 @@ Recipe notes: `/scratch/zadoks_a/software/qe-build/recipes/README.md`.
 Builds are scripted per toolchain (`qe-build`, one Slurm job each);
 QE links its own hdf5/libxc statically, no legacy Intel build.
 
+## Verification (2026-10-28, Austin, Slurm job 709497)
+
+Short tests on all four builds on `thor1`, 8 MPI ranks each, 1m10s
+total, 36/36 checks passed: Si SCF (libxc PBE, ScaLAPACK, HDF5) +
+`ph.x` + `dynmat.x`, Au SCF (relativistic ONCV, spin-orbit) + bands.
+7.5 vs 7.6 identical per toolchain; gf vs ioapi differ by 2.4 uRy in
+Si total energy only (old `Si.bhs` pseudopotential, math-library
+noise; UPF-based gold matches to the digit). Timing runs too short
+to compare; see README benchmarks.
+
 ## Copy command (QE only)
 
 ```bash
