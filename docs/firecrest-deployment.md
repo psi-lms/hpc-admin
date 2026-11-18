@@ -313,7 +313,7 @@ ssh -L 8000:127.0.0.1:8000 -L 8080:127.0.0.1:8080 lms-login.psi.ch
 
 TOKEN=$(curl -s -X POST http://localhost:8080/auth/realms/lms/protocol/openid-connect/token \
   -d grant_type=client_credentials -d client_id=firecrest-aiida-geiger_j \
-  -d client_secret=<from bootstrap> | jq -r .access_token)
+  -d client_secret=$F7T_SECRET | jq -r .access_token)
 
 echo $TOKEN | cut -d. -f2 | python3 -c 'import sys,base64,json; s=sys.stdin.read().strip(); print(json.loads(base64.urlsafe_b64decode(s+"="*(-len(s)%4))))'
 
