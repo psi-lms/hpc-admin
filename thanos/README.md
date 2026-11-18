@@ -15,14 +15,18 @@ from a workstation and fans out to the cluster with `pdsh`. Deploy by cloning
 this repository on the box, so `git log` answers which version is running:
 
 ```bash
-git clone https://github.com/psi-lms/hpc-admin.git ~/scripts/hpc-admin
+git clone git@github.com:psi-lms/hpc-admin.git ~/scripts/hpc-admin
 cd ~/scripts/hpc-admin && git pull
 ```
 
-HTTPS rather than SSH, because the repository is public and thanos has a single
-shared account whose key is not the right identity to be pulling with. Treat
-the checkout as read-only: editing a script in place there makes the next
-`git pull` conflict.
+**Never push from thanos.** The box has a single shared account, and its
+default key authenticates to GitHub as one particular lab member, so a push
+from here lands commits under that person's name. Pulling is unattributed and
+therefore fine.
+
+Treat the checkout as read-only for the same reason it is a checkout at all:
+editing a script in place makes the next `git pull` conflict, and then nothing
+on the box tells you which version is running.
 
 ## Layout
 
