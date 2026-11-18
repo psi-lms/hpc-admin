@@ -6,6 +6,10 @@ root via FQDN), unless noted otherwise. See
 [cluster-ops-runbook.md](cluster-ops-runbook.md) for the underlying auth
 and connectivity model.
 
+Scripts for the **thanos** AiiDA workstation live in `thanos/` and are not
+listed here; they run on that machine rather than fanning out to the cluster.
+See `thanos/README.md`.
+
 ## Configuration / data
 
 ### `extract-users.py`

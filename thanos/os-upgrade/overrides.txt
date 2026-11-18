@@ -1,0 +1,9 @@
+# Requirements that can no longer be resolved from PyPI, and where to get them.
+# Format: <exact line from the freeze><TAB><replacement requirement>
+# Applied to the pinned set before installing. Tabs, not spaces.
+#
+# Both aiida-wannier90 and aiida-wannier90-workflows were on PyPI when these
+# venvs were built and have since been removed from the index (both 404 now).
+# The GitHub repos still carry the matching tags.
+aiida-wannier90==2.2.0	aiida-wannier90 @ git+https://github.com/aiidateam/aiida-wannier90.git@v2.2.0
+aiida-wannier90-workflows==2.6.0	aiida-wannier90-workflows @ git+https://github.com/aiidateam/aiida-wannier90-workflows.git@v2.6.0

@@ -1,0 +1,35 @@
+# AiiDA backups on thanos. One line per project; profiles are passed as a
+# space-separated list so a project is backed up by a SINGLE process.
+#
+# Why one line per project: aiida-backup.sh derives its log path from the
+# project name ($ROOT/<project>/backup.log) and opens it with a truncating
+# `tee`. Two cron entries for the same project race on that file. Passing
+# multiple profiles to one invocation makes the script loop over them
+# sequentially into one log instead.
+#
+# Start times are staggered, largest project first, so ~200 GB of pg_dump
+# and the NFS writes are not all issued at 00:00.
+
+REPO=/home/aiida/scripts/aiida-backup-script
+aiida_venv_dir=/home/aiida/.aiida_venvs
+
+#  m   h  dom mon dow   command
+   0   0   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-electronic  -p "dev test_2"                                            > $REPO/aiida-backup-mc3d-electronic.log  2>&1
+  15   0   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-source      -p "prod dev test batio source-test"                       > $REPO/aiida-backup-mc3d-source.log      2>&1
+  30   0   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n fermisurf        -p "main"                                                  > $REPO/aiida-backup-fermisurf.log        2>&1
+  45   0   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-relax-so    -p "presto"                                                > $REPO/aiida-backup-mc3d-relax-so.log    2>&1
+   0   1   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n sssp-project     -p "presto full-24-07"                                     > $REPO/aiida-backup-sssp-project.log     2>&1
+  15   1   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-super       -p "prod"                                                  > $REPO/aiida-backup-mc3d-super.log       2>&1
+  30   1   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-relax-mpds  -p "prod"                                                  > $REPO/aiida-backup-mc3d-relax-mpds.log  2>&1
+  45   1   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-spin_orbit  -p "presto prod"                                           > $REPO/aiida-backup-mc3d-spin_orbit.log  2>&1
+   0   2   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n sssp-tests       -p "correct_cutoffs presto precision_tests final_sssp_tests pbesol_tests" > $REPO/aiida-backup-sssp-tests.log 2>&1
+  15   2   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-relax       -p "prod dev"                                              > $REPO/aiida-backup-mc3d-relax.log       2>&1
+  30   2   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n sssp_tutorial    -p "presto"                                                > $REPO/aiida-backup-sssp_tutorial.log    2>&1
+  45   2   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n electrides_test  -p "presto"                                                > $REPO/aiida-backup-electrides_test.log  2>&1
+   0   3   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n kristjan_tests   -p "mc3d-pbesol-v2 presto"                                 > $REPO/aiida-backup-kristjan_tests.log   2>&1
+  15   3   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n hubml            -p "hubml-dev hubml-prod"                                  > $REPO/aiida-backup-hubml.log            2>&1
+  30   3   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n ali-playground   -p "dev"                                                   > $REPO/aiida-backup-ali-playground.log   2>&1
+  45   3   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n thor-dev         -p "thor-dev"                                              > $REPO/aiida-backup-thor-dev.log         2>&1
+   0   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n pseudo-opt       -p "dev prod"                                              > $REPO/aiida-backup-pseudo-opt.log       2>&1
+  15   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n alps_run         -p "arch_final arch_t1 presto-8"                           > $REPO/aiida-backup-alps_run.log         2>&1
+  30   4   *   *   *    $REPO/aiida-backup.sh -e aiida-project -n mc3d-pbesol-v1   -p "prod"                                                  > $REPO/aiida-backup-mc3d-pbesol-v1.log   2>&1

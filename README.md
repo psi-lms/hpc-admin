@@ -4,6 +4,8 @@ Quality-of-life infrastructure for the Thor cluster (and historically also Thano
 
 Most scripts here assume you run them from your **local workstation** (`mpc3152` etc.), where `pdsh` is configured with the `ssh` rcmd module and root has SSH keys to every thor node via FQDN. See `docs/cluster-ops-runbook.md` for the full auth and connectivity model.
 
+`thanos/` is the exception: it covers the AiiDA workstation rather than the cluster, and its scripts run on that machine. See `thanos/README.md`.
+
 ## Docs
 
 - `docs/cluster-ops-runbook.md` — operational primitives: how to drain/resume nodes, run puppet cluster-wide, remount `/scratch`, restart BeeGFS metadata servers, deploy files via Hiera. Start here for any maintenance window.
@@ -25,6 +27,10 @@ See `docs/scripts.md` for full descriptions.
 | `link-homes.sh` | Per-node `/home/<user>` → `/mnt/home/<user>` symlinks |
 | `deploy-podman-storage-conf.sh` | Push canonical podman storage.conf into existing user homes |
 | `fix-user-group.sh` | Map slurm account to unix group; chown home and scratch (draft) |
+
+## Thanos
+
+`thanos/` holds the curated residue of the August 2026 Ubuntu 24.04 upgrade of the AiiDA workstation, kept so the next person to upgrade it starts from something. `thanos/README.md` has the upgrade sequence, the storage layout, and the facts about that machine that cost time to learn. `thanos/docs/home-backup.md` covers the `/home/aiida` backup, which is the one piece still in flight.
 
 ## Prerequisites
 
